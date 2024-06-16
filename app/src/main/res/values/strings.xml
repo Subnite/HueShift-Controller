@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">HueShift Controller</string>
+    <string name="default_ip">0.0.0.0</string>
+    <string name="default_port">0000</string>
+</resources>
