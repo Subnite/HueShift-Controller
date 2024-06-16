@@ -6,23 +6,38 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <TextView
-        android:id="@+id/hueshiftIP"
-        android:layout_marginHorizontal="@dimen/horizontalMargin"
-        android:textSize="@dimen/textSize"
-
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true"
-        android:text="@string/default_ip" />
-    <TextView
-        android:id="@+id/hueshiftMidiPort"
-        android:layout_marginHorizontal="@dimen/horizontalMargin"
-        android:textSize="@dimen/textSize"
+        android:layout_marginStart="20dp"
+        android:layout_marginVertical="10dp"
+        android:id="@+id/ipBar">
+        <TextView
+            android:id="@+id/hueshiftIP"
+            android:layout_marginEnd="@dimen/horizontalMargin"
+            android:textSize="@dimen/textSize"
 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/default_ip" />
+        <TextView
+            android:id="@+id/hueshiftMidiPort"
+            android:layout_marginEnd="@dimen/horizontalMargin"
+            android:textSize="@dimen/textSize"
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/default_port" />
+    </LinearLayout>
+
+
+    <include layout="@layout/button_selection"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toEndOf="@+id/hueshiftIP"
-        android:text="@string/default_port" />
+        android:layout_below="@+id/ipBar"
+        android:layout_alignStart="@id/ipBar">
+
+    </include>
+
+
 </RelativeLayout>

@@ -68,7 +68,10 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     val appcompat_version = "1.7.0"
+    val mdc_version = "1.12.0"
     implementation("androidx.appcompat:appcompat:$appcompat_version")
     // For loading and tinting drawables on older versions of the platform
     implementation("androidx.appcompat:appcompat-resources:$appcompat_version")
+
+    implementation("com.google.android.material:material:$mdc_version")
 }

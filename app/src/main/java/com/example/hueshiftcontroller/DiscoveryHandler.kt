@@ -1,16 +1,22 @@
 package com.example.hueshiftcontroller
 
-import android.os.Bundle
-import android.util.Log
 // import android.net.wifi.WifiManager
-import androidx.appcompat.app.AppCompatActivity
-import kotlinx.coroutines.*
+import android.util.Log
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.net.DatagramPacket
 import java.net.DatagramSocket
+import java.net.Inet4Address
 import java.net.InetAddress
+import java.net.NetworkInterface
+import java.net.SocketException
 
 
-class DiscoveryHandler : AppCompatActivity() {
+class DiscoveryHandler {
     private val Tag = "HueShift.DiscoveryHandler"
 
     private val discoveryUDPPort = 8179 // sends to this port
@@ -20,18 +26,13 @@ class DiscoveryHandler : AppCompatActivity() {
 
     private var discoverySendJob: Job? = null
     private var discoveryReceiveJob: Job? = null
-    private var sendSocket: DatagramSocket? = null;
-    private var receiveSocket: DatagramSocket? = null;
+    private var sendSocket: DatagramSocket? = null
+    private var receiveSocket: DatagramSocket? = null
 
     private var hueShiftIP: InetAddress? = null
 
     // this will be called every time a device responded to the broadcast discovery call
     var onDeviceChanged: ((InetAddress) -> Unit)? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-    }
 
     fun startDiscovery() {
         UDPDiscoveryReceiver()
@@ -48,7 +49,9 @@ class DiscoveryHandler : AppCompatActivity() {
                 val packet = DatagramPacket(
                     discoveryMessageBytes,
                     discoveryMessageBytes.size,
-                    InetAddress.getByName("192.168.50.255"),
+                    InetAddress.getByName(
+                        getLocalBroadcastAddress()
+                    ),
                     discoveryUDPPort
                 )
                 // sending it to all devices on the local network
@@ -114,4 +117,31 @@ class DiscoveryHandler : AppCompatActivity() {
         }
     }
 
+    fun getLocalBroadcastAddress() : String {
+        var localIP = getLocalIpAddress()
+        localIP = localIP?.substringBeforeLast('.').plus(".255")
+
+        Log.d(Tag, "local IP: $localIP")
+        return localIP
+    }
+
+    // got from internet https://stackoverflow.com/questions/6064510/how-to-get-ip-address-of-the-device-from-code
+    private fun getLocalIpAddress(): String? {
+        try {
+            val en = NetworkInterface.getNetworkInterfaces()
+            while (en.hasMoreElements()) {
+                val intf = en.nextElement()
+                val enumIpAddr = intf.inetAddresses
+                while (enumIpAddr.hasMoreElements()) {
+                    val inetAddress = enumIpAddr.nextElement()
+                    if (!inetAddress.isLoopbackAddress && inetAddress is Inet4Address) {
+                        return inetAddress.getHostAddress()
+                    }
+                }
+            }
+        } catch (ex: SocketException) {
+            ex.printStackTrace()
+        }
+        return null
+    }
 }
