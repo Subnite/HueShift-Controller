@@ -1,39 +1,48 @@
 package com.example.hueshiftcontroller
 
-import android.os.Bundle
+import android.content.Context
 import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import com.google.android.material.button.MaterialButton
 
-class CameraButtonSelector : AppCompatActivity() {
-    private lateinit var ll_vert: LinearLayout
+class CameraButtonSelector(llGrid: LinearLayout, context: Context) {
+    private var ll_vert: LinearLayout
+    private var ctx: Context
     private val dbgTag = "HueShift.CameraButtons"
 
-    var onClickListener = View.OnClickListener() {
-        Toast.makeText(applicationContext, ""+it.tag, Toast.LENGTH_SHORT).show()
+    var onButtonClicked: ((column: Int, row: Int) -> Unit)? = null
 
-        // var msg = midiVM.midiHandler.composeMessage(buttonModeSelector.currentType, event.x, event.y)
-        // midiVM.midiHandler.sendData(msg)
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-
-        ll_vert = findViewById<LinearLayout>(R.id.ll_vert)
+    init {
+        ll_vert = llGrid
+        ctx = context
+        // createButtonGrid(5, 2)
         Log.d(dbgTag, "CameraButtonSelector class initialized")
-
-        createButtonGrid(2, 3, ll_vert.width, ll_vert.height)
     }
 
-    fun createButtonGrid(colums: Int, rows: Int, maxWidth: Int, maxHeight: Int) {
+    // starts from 1, returns row, column
+    private fun getGridInt(gridTag: String): Pair<Int, Int> {
+        val row = gridTag.substringBefore('_').toInt()
+        val col = gridTag.substringAfter('_').toInt()
+
+        return Pair(row, col)
+    }
+
+    private var onClickListener = View.OnClickListener() {
+//        Toast.makeText(ctx, ""+it.tag, Toast.LENGTH_SHORT).show()
+        val coord = getGridInt(it.tag.toString())
+        onButtonClicked?.invoke(coord.second, coord.first)
+        Log.d(dbgTag, "Clicked! $coord")
+    }
+
+    fun createButtonGrid(colums: Int, rows: Int) {
+        val maxWidth = ll_vert.width
+        val maxHeight = ll_vert.height
         for (i in 1..rows) {
             val llRow = createSingleRow()
             // val width = maxWidth / colums
@@ -48,10 +57,11 @@ class CameraButtonSelector : AppCompatActivity() {
     }
 
     private fun createSingleMaterialButton(row: Int = 0, column: Int = 0): MaterialButton {
-        val btn = MaterialButton(this)
+        val btn = MaterialButton(ctx)
 
         btn.text = " "
         btn.tag = ""+row+"_"+column
+        btn.isClickable = true
 
         val params = LinearLayout.LayoutParams(
             ViewGroup.LayoutParams.WRAP_CONTENT,
@@ -80,9 +90,10 @@ class CameraButtonSelector : AppCompatActivity() {
     }
 
     private fun createSingleRow(): LinearLayout {
-        val row = LinearLayout(this)
+        val row = LinearLayout(ctx)
         row.orientation = LinearLayout.HORIZONTAL
         row.gravity = Gravity.CENTER
+        row.isClickable = true
 
         return row
     }
