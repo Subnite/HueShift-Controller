@@ -5,8 +5,14 @@ import android.util.Log
 import android.widget.Toast
 import com.google.android.material.button.MaterialButtonToggleGroup
 
+enum class ToggleType {
+    SET,
+    FREEZE,
+    OCTAVE
+}
+
 class ButtonModeSelector {
-    var currentIndex = 0
+    var currentType = ToggleType.SET
         private set
 
     fun setupSelections(context: Context, buttonSelector: MaterialButtonToggleGroup) {
@@ -17,21 +23,21 @@ class ButtonModeSelector {
                 var message = "No configured button selected"
                 when (checkedId) {
                     R.id.toggleSel -> {
-                        currentIndex = 0
+                        currentType = ToggleType.SET
                         message = "Selection mode activated!"
                     }
                     R.id.toggleFrz -> {
-                        currentIndex = 1
+                        currentType = ToggleType.FREEZE
                         message = "Freeze mode activated!"
                     }
                     R.id.toggleOct -> {
-                        currentIndex = 2
+                        currentType = ToggleType.OCTAVE
                         message = "Octave / Frequency mode activated!"
                     }
                 }
 
                 Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-                Log.d("HueShift.Toggles", "cycled to $currentIndex")
+                Log.d("HueShift.Toggles", "cycled to $currentType")
             }
 //            else {
 //                currentIndex = -1
