@@ -1,5 +1,6 @@
 package com.example.hueshiftcontroller
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.MotionEvent
 import android.widget.Button
@@ -32,21 +33,24 @@ class MainActivity : AppCompatActivity() {
         // Change the function used when the hueshift device was found or changed
         discoveryVM.discovery.onDeviceChanged = { address, midiPort -> updateHueshiftIP(address, midiPort) }
 
-        val camButton: Button = findViewById(R.id.cameraData)
-        camButton.isClickable = true
-        camButton.setOnTouchListener { v, event ->
-            when (event.action) {
-                MotionEvent.ACTION_UP -> {
-                    // Call the function when the button is released
-                    var msg = midiVM.midiHandler.composeMessage(buttonModeSelector.currentType, event.x, event.y)
-                    midiVM.midiHandler.sendData(msg)
-                    true
-                }
-                else -> false
-            }
-        }
+//        val camButton: Button = findViewById(R.id.cameraData)
+//        camButton.isClickable = true
+//        camButton.setOnTouchListener { v, event ->
+//            when (event.action) {
+//                MotionEvent.ACTION_UP -> {
+//                    // Call the function when the button is released
+//                    var msg = midiVM.midiHandler.composeMessage(buttonModeSelector.currentType, event.x, event.y)
+//                    midiVM.midiHandler.sendData(msg)
+//                    true
+//                }
+//                else -> false
+//            }
+//        }
 
-        updateHueshiftIP(discoveryVM.discovery.hueShiftIP, discoveryVM.discovery.hueShiftPort)
+        val intent = Intent(this, CameraButtonSelector::class.java)
+        startActivity(intent)
+
+        updateHueshiftIP(discoveryVM.discovery.hueShiftIP, discoveryVM.discovery.hueShiftPort) // to show most recent data at the start
     }
 
     private fun updateHueshiftIP(address: InetAddress?, midiPort: Int) {

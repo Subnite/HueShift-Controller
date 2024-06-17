@@ -9,8 +9,8 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginVertical="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginVertical="0dp"
         android:id="@+id/ipBar">
         <TextView
             android:id="@+id/hueshiftIP"
@@ -50,7 +50,7 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-
+        <!--
         <Button
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toEndOf="@id/buttonsWrapped"
@@ -59,19 +59,20 @@
             android:clickable="true"
             android:id="@+id/cameraData"
             android:layout_height="match_parent" />
+            -->
+
+        <LinearLayout
+            android:orientation="horizontal"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toEndOf="@id/buttonsWrapped"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="0dp"
+            android:clickable="true"
+            android:id="@+id/cameraData"
+            android:layout_height="match_parent">
+
+            <include layout="@layout/camera_grid"/>
+        </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 </RelativeLayout>
