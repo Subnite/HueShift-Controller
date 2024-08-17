@@ -36,6 +36,7 @@ class DiscoveryHandler {
     private val discoveryReceiveUDPPort = 8180 // receives on this port
     private val discoveryPingMessage = "HS_PING"
     private val gotDiscoveredMessage = "HS_65535" // the last part is the port, can start with a 0 for shorter port num
+    var subnetAmount = 1
 
     private var discoverySendJob: Job? = null
     private var discoveryReceiveJob: Job? = null
@@ -69,12 +70,13 @@ class DiscoveryHandler {
                     sendSocket?.broadcast = true
                 }
 
+                val subnetAdjustedIP = getLocalBroadcastAddress(subnetAmount)
                 val discoveryMessageBytes = discoveryPingMessage.toByteArray(Charsets.UTF_8)
                 val packet = DatagramPacket(
                     discoveryMessageBytes,
                     discoveryMessageBytes.size,
                     InetAddress.getByName(
-                        getLocalBroadcastAddress()
+                        subnetAdjustedIP
                     ),
                     discoveryUDPPort
                 )
@@ -82,7 +84,7 @@ class DiscoveryHandler {
 
                 while (true) {
                     sendSocket?.send(packet)
-                    Log.d(Tag, "broadcasting discovery message")
+                    Log.d(Tag, "broadcasting discovery message to $subnetAdjustedIP")
                     delay(5000)
                 }
             } catch (e: Exception) {
@@ -145,12 +147,21 @@ class DiscoveryHandler {
         }
     }
 
-    fun getLocalBroadcastAddress() : String {
+    // subnet Amount is how many 255's to add to the IP. Returns local addr if not found.
+    fun getLocalBroadcastAddress(subnetAmount: Int) : String {
         var localIP = getLocalIpAddress()
-        localIP = localIP?.substringBeforeLast('.').plus(".255")
+        for (i in 1..subnetAmount) {
+            localIP = localIP?.substringBeforeLast('.')
+        }
+        for (i in 1..subnetAmount) {
+            localIP = localIP?.plus(".255")
+        }
 
         Log.d(Tag, "local IP: $localIP")
-        return localIP
+        if (localIP != null) {
+            return localIP
+        }
+        return "127.0.0.1"
     }
 
     // got from internet https://stackoverflow.com/questions/6064510/how-to-get-ip-address-of-the-device-from-code

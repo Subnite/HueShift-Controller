@@ -77,7 +77,7 @@ class MidiHandler {
     }
 
     // based on coordinates
-    private fun getVoiceIndex(x: Float, y: Float, amtColumns: Int, amtRows: Int): Int {
+    private fun getVoiceIndex(x: Float, y: Float, amtColumns: Int): Int {
         val deviceWidth = 1080f // random atm
         val deviceHeight = 2700f // random atm
 
@@ -85,13 +85,13 @@ class MidiHandler {
     }
 
     // based on 1 based index in a grid
-    private fun getVoiceIndex(column: Int, row: Int, amtColumns: Int, amtRows: Int): Int {
-        return amtColumns * (row-1) + (column-1)
+    private fun getVoiceIndex(column: Int, row: Int, amtColumns: Int): Int {
+        return (amtColumns * (row-1)) + (column-1)
     }
 
     fun composeMessage(currentType: ToggleType, x: Float, y: Float): String {
         var msg = getMidiMessagePrefix(currentType)
-        val voiceIndex = getVoiceIndex(x, y, 2, 1).toString()
+        val voiceIndex = getVoiceIndex(x, y, 5).toString()
 
         var zeros = ""
         for (i in 1..maxDigits-voiceIndex.length) {
@@ -107,7 +107,7 @@ class MidiHandler {
     // based on 1 as the first row for example
     fun composeMessage(currentType: ToggleType, column: Int, row: Int): String {
         var msg = getMidiMessagePrefix(currentType)
-        val voiceIndex = getVoiceIndex(column, row, 2, 1).toString()
+        val voiceIndex = getVoiceIndex(column, row, 5).toString()
 
         var zeros = ""
         for (i in 1..maxDigits-voiceIndex.length) {
